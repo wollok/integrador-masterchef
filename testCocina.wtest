@@ -1,0 +1,90 @@
+import cocina.*
+
+describe "tests de cocineros" {
+
+  const donato = new Cocinero(especialidad = new Chef(calorias = 150))
+  const otroCocinero = new Cocinero(especialidad = new Chef(calorias = 1))
+  const damian = new Cocinero(especialidad = new Pastelero(nivelDeseado = 200))
+  const otroPastelero = new Cocinero(especialidad = new Pastelero(nivelDeseado = 50))
+  const german = new Cocinero(especialidad = sousChef)
+
+  const entrada = german.cocinar()
+  const platoPrincipal = donato.cocinar()
+  const otroPlatoPrincipal = otroCocinero.cocinar()
+  const postre = damian.cocinar()
+
+  method inscripcionConcurso(){
+    concurso.inscribirse(donato)
+    concurso.inscribirse(damian)
+    concurso.inscribirse(german)
+  }
+  test "Un pastelero con nivelDeseado alto crea un postre bonito" {
+    assert.that(damian.cocinar().bonito())
+  }
+  test "Un pastelero con nivelDeseado bajo crea un postre que no es bonito" {
+    assert.notThat(otroPastelero.cocinar().bonito())
+  }
+  test "Un souschef crea una entrada" {
+    assert.equals(0, german.cocinar().grasas())
+  }
+  test "Un chef crea un plato principal con tanta grasa como sus calorias" {
+    assert.equals(150, donato.cocinar().grasas())
+  }
+
+  test "Un pastelero califica una entrada con 0" {
+    assert.equals(0,damian.calificar(entrada))
+  }
+  test "Un chef califica una entrada con 10" {
+    assert.equals(10,donato.calificar(entrada))
+  }
+  test "Un souschef califica una entrada con 1" {
+    assert.equals(1,german.calificar(entrada))
+  }
+
+  test "Un pastelero con nivelDeseado alto califica un plato principal" {
+    assert.equals(3.75,damian.calificar(platoPrincipal))
+  }
+  test "Un pastelero con nivelDeseado bajo califica un plato principal" {
+    assert.equals(10,otroPastelero.calificar(platoPrincipal))
+  }
+  test "Un chef califica plato principal " {
+    assert.equals(0,donato.calificar(platoPrincipal))
+  }
+
+  test "Un chef califica plato principal pocas calorias" {
+    assert.equals(10,donato.calificar(otroPlatoPrincipal))
+  }
+  
+  test "Un souschef califica plato principal" {
+    assert.equals(4,german.calificar(otroPlatoPrincipal))
+  }
+
+ test "Un pastelero califica postre" {
+    assert.equals(3,damian.calificar(postre))
+  }
+  test "Un chef califica postre " {
+    assert.equals(0,donato.calificar(postre))
+  }
+  
+  test "Un souschef califica postre" {
+    assert.equals(1,german.calificar(postre))
+  }
+
+  test "calificacion total de una entrada por todo el jurado"{
+    self.inscripcionConcurso()
+    assert.equals(11,concurso.calificacion(entrada))
+  }
+  test "calificacion total de un platoPrincipal por todo el jurado"{
+    self.inscripcionConcurso()
+    assert.equals(4.75,concurso.calificacion(platoPrincipal))
+  }
+  test "calificacion total de un postre por todo el jurado"{
+    self.inscripcionConcurso()
+    assert.equals(4,concurso.calificacion(postre))
+  }
+  test "el ganador del concurso" {
+    self.inscripcionConcurso()
+    assert.equals(german,concurso.ganador())
+  }
+
+}
